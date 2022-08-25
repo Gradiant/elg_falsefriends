@@ -26,11 +26,12 @@ def read_words(file_name):
     return friend_pairs
 
 #models
-
+training_friend_pairs = read_words(
+    "./falsefriendsp/resources/sepulveda2011_training.txt")
 model_es = KeyedVectors.load_word2vec_format("./falsefriendsp/resources/big/es.txt")
 model_pt = KeyedVectors.load_word2vec_format("./falsefriendsp/resources/big/pt.txt")
 T = linear_trans.load_linear_transformation("./falsefriendsp/resources/big/trans_es_300_pt_300.npz")
-
+X_train, y_train = classifier.features_and_labels(training_friend_pairs, model_es, model_pt, T)
 
 @as_json
 @app.route("/class_falsefriends", methods=["POST"])
@@ -79,13 +80,11 @@ def generate_failure_response(status, code, text, params, detail):
 
 
 def classify(word_es, word_pt):
-    training_friend_pairs = read_words(
-        "./falsefriendsp/resources/sepulveda2011_training.txt")
+
     # Friends pair constructor
     friends_pair = [
         falsefriendsp.falsefriends.classifier.FriendPair(word_es, word_pt, False)]  # false friends as default
 
-    X_train, y_train = classifier.features_and_labels(training_friend_pairs, model_es, model_pt, T)
     X_test, y_test = classifier.features_and_labels(friends_pair, model_es, model_pt, T, topx=True)
 
     clf = classifier.build_classifier(svm.SVC())
