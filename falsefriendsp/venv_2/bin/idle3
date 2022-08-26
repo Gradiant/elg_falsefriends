@@ -1,5 +1,0 @@
-#!/home/lgil/Escritorio/MICROSERVS/falsefriendsp/venv_2/bin/python3.5
-
-from idlelib.PyShell import main
-if __name__ == '__main__':
-    main()
