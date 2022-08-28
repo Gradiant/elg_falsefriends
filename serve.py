@@ -15,6 +15,7 @@ app.config["UPLOAD_FOLDER"] = "files/"
 
 json_app = FlaskJSON(app)
 
+
 def read_words(file_name):
     with open(file_name) as friends_file:
         friend_pairs = []
@@ -25,13 +26,25 @@ def read_words(file_name):
                 friend_pairs.append(classifier.FriendPair(word_es, word_pt, true_friends))
     return friend_pairs
 
-#models
+
+def generate_linear_trans(model_es, model_pt):
+    lexicon = bilingual_lexicon.bilingual_lexicon()
+    X, Y = zip(*word_vectors.bilingual_lexicon_vectors(model_es, model_pt, bilingual_lexicon=lexicon))
+    T = linear_trans.linear_transformation(X, Y)
+    linear_trans.save_linear_transformation("./falsefriendsp/resources/big/trans_es_300_pt_300.npz", T)
+
+    return T
+
+
+# models
 training_friend_pairs = read_words(
     "./falsefriendsp/resources/sepulveda2011_training.txt")
 model_es = KeyedVectors.load_word2vec_format("./falsefriendsp/resources/big/es.txt")
 model_pt = KeyedVectors.load_word2vec_format("./falsefriendsp/resources/big/pt.txt")
-T = linear_trans.load_linear_transformation("./falsefriendsp/resources/big/trans_es_300_pt_300.npz")
+T = generate_linear_trans(model_es, model_pt)
 X_train, y_train = classifier.features_and_labels(training_friend_pairs, model_es, model_pt, T)
+
+
 
 @as_json
 @app.route("/class_falsefriends", methods=["POST"])
@@ -43,13 +56,11 @@ def class_falsefriends():
 
     word_es = data["texts"][0]["content"]
     word_pt = data["texts"][1]["content"]
-    print(word_pt)
-    print(word_es)
 
     try:
         # Complete here
         output = classify(word_es, word_pt)
-        return generate_successful_response(str(output))
+        return generate_successful_response(output)
     except Exception as e:
         return generate_failure_response(status=404, code="elg.service.internalError", text=None, params=None,
                                          detail=str(e))
@@ -64,7 +75,11 @@ def invalid_request_error(e):
 
 
 def generate_successful_response(result):
-    response = {"type": "classification", "classes": [{"falsefriends": result}]}
+    if result:
+        result = "false friends"
+    else:
+        result = "no false friends"
+    response = {"type": "classification", "classes": [{"class": result}]}
     output = {'response': response}
     return output
 
@@ -80,7 +95,6 @@ def generate_failure_response(status, code, text, params, detail):
 
 
 def classify(word_es, word_pt):
-
     # Friends pair constructor
     friends_pair = [
         falsefriendsp.falsefriends.classifier.FriendPair(word_es, word_pt, False)]  # false friends as default
@@ -95,19 +109,5 @@ def classify(word_es, word_pt):
     return predicted[0]
 
 
-# def generate_linear_trans(model_es, model_pt):
-#     lexicon = bilingual_lexicon.bilingual_lexicon()
-#     X, Y = zip(*word_vectors.bilingual_lexicon_vectors(model_es, model_pt, bilingual_lexicon=lexicon))
-#     T = linear_trans.linear_transformation(X, Y)
-#     linear_trans.save_linear_transformation("./falsefriendsp/resources/big/trans_es_300_pt_300.npz", T)
-#
-#     return T
-
-
-
-
-
 if __name__ == '__main__':
-
     app.run(host='0.0.0.0', port=8866)
-
