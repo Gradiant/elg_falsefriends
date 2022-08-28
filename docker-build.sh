@@ -2,4 +2,4 @@
 
 NAME=elg_falsefriends
 TAG=1.0
-docker build ${NAME}:${TAG} .
+docker build -t ${NAME}:${TAG} .

@@ -56,13 +56,11 @@ def class_falsefriends():
 
     word_es = data["texts"][0]["content"]
     word_pt = data["texts"][1]["content"]
-    print(word_pt)
-    print(word_es)
 
     try:
         # Complete here
         output = classify(word_es, word_pt)
-        return generate_successful_response(str(output))
+        return generate_successful_response(output)
     except Exception as e:
         return generate_failure_response(status=404, code="elg.service.internalError", text=None, params=None,
                                          detail=str(e))
@@ -77,7 +75,11 @@ def invalid_request_error(e):
 
 
 def generate_successful_response(result):
-    response = {"type": "classification", "classes": [{"falsefriends": result}]}
+    if result:
+        result = "false friends"
+    else:
+        result = "no false friends"
+    response = {"type": "classification", "classes": [{"class": result}]}
     output = {'response': response}
     return output
 
