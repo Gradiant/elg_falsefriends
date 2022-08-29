@@ -7,16 +7,16 @@ RUN apt-get update -y \
     && apt-get install -y unzip \
 	&& rm -rf /var/lib/apt/lists/*
 
-RUN pip install --upgrade pip
-RUN pip install nltk
-RUN pip install flask flask_json
+RUN pip install --upgrade pip && \
+    pip install nltk && \
+    pip install flask flask_json
 
 RUN mkdir -p falsefriends
 COPY ./ /falsefriends
 WORKDIR /falsefriends/
-RUN python --version
-RUN pip install Cython
-RUN pip install -r requirements.txt
+RUN python --version && \
+    pip install Cython && \
+    pip install -r requirements.txt
 
 
 ENV LANG="C.UTF-8" \
