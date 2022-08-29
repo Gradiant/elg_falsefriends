@@ -15,7 +15,7 @@ docker run --rm -p 0.0.0.0:8866:8866 --name falsefriends elg_falsefriends:1.0
 ## Use
 
 ```
- curl -X POST http://0.0.0.0:8866/class_falsefriends -H 'Content-Type: application/json' -d '{"type":"structuredText", "texts":[{"content":spanish word},{"content":portuguese word}]}'
+ curl -X POST http://0.0.0.0:8866/class_falsefriends -H 'Content-Type: application/json' -d '{"type":"structuredText", "texts":[{"content":"spanish word"},{"content":"portuguese word"}]}'
 ```
 
 ## Example
