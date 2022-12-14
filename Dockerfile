@@ -1,14 +1,14 @@
 FROM python:3.5
 
-RUN pip install --upgrade pip && \
-    pip install flask flask_json
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir flask flask_json
 
 RUN mkdir -p falsefriends
 COPY ./ /falsefriends
 WORKDIR /falsefriends/
 RUN python --version && \
-    pip install Cython && \
-    pip install -r requirements.txt
+    pip install --no-cache-dir Cython==0.29.32 && \
+    pip install --no-cache-dir -r requirements.txt
 
 
 ENV LANG="C.UTF-8" \
