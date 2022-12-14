@@ -4,7 +4,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir flask flask_json
 
 RUN mkdir -p falsefriends
-COPY ./ /falsefriends
+COPY requirements.txt /falsefriends/
 WORKDIR /falsefriends/
 RUN python --version && \
     pip install --no-cache-dir Cython==0.29.32 && \
@@ -36,5 +36,5 @@ RUN mkdir falsefriendsp/resources/big \
 
 EXPOSE 8866
 
-#COPY ./ ./
+COPY ./ ./
 CMD ["python", "serve.py"]
