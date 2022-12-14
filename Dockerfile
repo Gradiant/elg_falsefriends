@@ -1,7 +1,6 @@
 FROM python:3.5
 
 RUN pip install --upgrade pip && \
-    pip install nltk && \
     pip install flask flask_json
 
 RUN mkdir -p falsefriends
