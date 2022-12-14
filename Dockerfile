@@ -1,12 +1,5 @@
 FROM python:3.5
 
-RUN apt-get update -y \
-	&& apt-get install -y python3-pip python3-dev \
-    && apt-get install -y wget \
-	&& apt-get install -y bzip2 \
-    && apt-get install -y unzip \
-	&& rm -rf /var/lib/apt/lists/*
-
 RUN pip install --upgrade pip && \
     pip install nltk && \
     pip install flask flask_json
