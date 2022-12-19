@@ -2,6 +2,7 @@ from flask import Flask, request
 from flask_json import FlaskJSON, JsonError, as_json
 
 import falsefriendsp
+import numpy as np
 from falsefriendsp.falsefriends.classifier import classify
 from falsefriendsp.falsefriends import word_vectors, classifier, linear_trans, bilingual_lexicon
 from sklearn import svm
@@ -16,33 +17,17 @@ app.config["UPLOAD_FOLDER"] = "files/"
 json_app = FlaskJSON(app)
 
 
-def read_words(file_name):
-    with open(file_name) as friends_file:
-        friend_pairs = []
-        for line in friends_file.readlines():
-            word_es, word_pt, true_friends = line.split()
-            if true_friends != '-1':
-                true_friends = true_friends == '1'
-                friend_pairs.append(classifier.FriendPair(word_es, word_pt, true_friends))
-    return friend_pairs
-
-
-def generate_linear_trans(model_es, model_pt):
-    lexicon = bilingual_lexicon.bilingual_lexicon()
-    X, Y = zip(*word_vectors.bilingual_lexicon_vectors(model_es, model_pt, bilingual_lexicon=lexicon))
-    T = linear_trans.linear_transformation(X, Y)
-    linear_trans.save_linear_transformation("./falsefriendsp/resources/big/trans_es_300_pt_300.npz", T)
-
-    return T
-
-
 # models
-training_friend_pairs = read_words(
-    "./falsefriendsp/resources/sepulveda2011_training.txt")
-model_es = KeyedVectors.load_word2vec_format("./falsefriendsp/resources/big/es.txt")
-model_pt = KeyedVectors.load_word2vec_format("./falsefriendsp/resources/big/pt.txt")
-T = generate_linear_trans(model_es, model_pt)
-X_train, y_train = classifier.features_and_labels(training_friend_pairs, model_es, model_pt, T)
+print("Reading Spanish model")
+model_es = KeyedVectors.load("./falsefriendsp/resources/big/es.kv")
+print("Reading Portuguese model")
+model_pt = KeyedVectors.load("./falsefriendsp/resources/big/pt.kv")
+print("Loading linear transform")
+T = linear_trans.load_linear_transformation("./falsefriendsp/resources/big/trans_es_300_pt_300.npz")
+print("Loading training pairs")
+with np.load("./falsefriendsp/resources/big/training_pairs.npz") as train_pairs:
+    X_train = train_pairs['X_train']
+    y_train = train_pairs['y_train']
 
 
 
