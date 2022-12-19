@@ -8,9 +8,9 @@ sh docker-build.sh
 ```
 
 ## Execute
-Launch the docker container and wait a few minutes until you see the API running. This may take a few minutes due to model processing.
+Launch the docker container.
 ```
-docker run --rm -p 0.0.0.0:8866:8866 --name falsefriends elg_falsefriends:1.0
+docker run --rm -p 0.0.0.0:8866:8866 --name falsefriends elg_falsefriends:1.1
 ```
 ## Use
 

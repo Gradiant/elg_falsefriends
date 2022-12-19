@@ -1,5 +1,5 @@
 #!/bin/bash
 
 NAME=elg_falsefriends
-TAG=1.0
+TAG=1.1
 docker build -t ${NAME}:${TAG} .
